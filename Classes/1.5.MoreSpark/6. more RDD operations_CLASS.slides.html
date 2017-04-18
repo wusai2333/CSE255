@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-<title>5. Execution plans, Lazy Evaluation, and caching slides</title>
+<title>6. more RDD operations_CLASS slides</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -11870,7 +11870,53 @@ a.anchor-link {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Execution-Plans,-Caching,-partitioning-and-Gloming.">Execution Plans, Caching, partitioning and Gloming.<a class="anchor-link" href="#Execution-Plans,-Caching,-partitioning-and-Gloming.">&#182;</a></h2>
+<h2 id="Types-of-spark-operations">Types of spark operations<a class="anchor-link" href="#Types-of-spark-operations">&#182;</a></h2><p>There are Three types of operations on RDDs: Transformations, Actions and Shuffles.</p>
+<ul>
+<li>The most expensive operations are those the require communication between nodes.</li>
+</ul>
+
+</div>
+</div>
+</div></section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Transformations:</strong> RDD $\to$ RDD.</p>
+<ul>
+<li><strong>Examples</strong> map, filter, sample, <a href="http://spark.apache.org/docs/latest/programming-guide.html#transformations">More</a></li>
+<li><strong>No</strong> communication needed.</li>
+</ul>
+
+</div>
+</div>
+</div></section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Actions:</strong> RDD $\to$ Python-object in head node.</p>
+<ul>
+<li><strong>Examples:</strong> reduce, collect, count, take, <a href="http://spark.apache.org/docs/latest/programming-guide.html#actions">More</a></li>
+<li><strong>Some</strong> communication needed.</li>
+</ul>
+
+</div>
+</div>
+</div></section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Shuffles:</strong> RDD $\to$ RDD, <strong>shuffle</strong> needed</p>
+<ul>
+<li><strong>Examples:</strong> repartition, sortByKey, reduceByKey, join <a href="http://spark.apache.org/docs/latest/programming-guide.html#shuffle-operations">More</a></li>
+<li><strong>A LOT</strong> of communication needed.</li>
+</ul>
+
 </div>
 </div>
 </div></section></section><section><section>
@@ -11879,85 +11925,63 @@ a.anchor-link {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Lazy-Evaluation">Lazy Evaluation<a class="anchor-link" href="#Lazy-Evaluation">&#182;</a></h2><ul>
-<li>we want to calculate the sum of he squares : $\sum_{i=1}^n x_i^2 $</li>
+<h2 id="Key/value-pairs">Key/value pairs<a class="anchor-link" href="#Key/value-pairs">&#182;</a></h2><ul>
+<li>A python dictionary is a collection of <em>key/value</em> pairs.</li>
+<li>The <strong>key</strong> is used to find a set of pairs with the particular key.</li>
+<li>The <strong>value</strong> can be anything.</li>
+<li>Spark has a set of special operations for <em>(key,value)</em> RDDs.</li>
 </ul>
-<p>The standard (or <strong>busy</strong>) way to do this is</p>
-<ol>
-<li>Calculate the square of each element.</li>
-<li>Sum the squares.</li>
-</ol>
-<p>This requires storing all intermediate results.</p>
+
+</div>
+</div>
+</div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Creating-(key,value)-RDDS">Creating (key,value) RDDS<a class="anchor-link" href="#Creating-(key,value)-RDDS">&#182;</a></h3><p><strong>Method 1:</strong> <code>parallelize</code> a list of pairs.</p>
 
 </div>
 </div>
 </div><div class="fragment">
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>An alternative is <strong>lazy</strong> evaluation:</p>
-<ul>
-<li><strong>postpone</strong> computing the square until result is needed.</li>
-<li>No need to store intermediate results.</li>
-<li>Scan through the data once, rather than twice.</li>
-</ul>
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">pair_rdd</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)])</span>
+<span class="k">print</span> <span class="n">pair_rdd</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+</pre></div>
 
 </div>
 </div>
-</div></div></section></section><section><section>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+<div class="prompt"></div>
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[(1, 2), (3, 4)]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div></div></section><section>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><img alt="" src="Figures/LazyEvaluation/Slide1.jpg" style="height:324px; width:900px" /></p>
-</div>
-</div>
-</div></section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p><img alt="" src="Figures/LazyEvaluation/Slide2.jpg" style="height:324px; width:900px" /></p>
-</div>
-</div>
-</div></section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p><img alt="" src="Figures/LazyEvaluation/Slide3.jpg" style="height:324px; width:900px" /></p>
-</div>
-</div>
-</div></section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p><img alt="" src="Figures/LazyEvaluation/Slide4.jpg" style="height:324px; width:900px" /></p>
-</div>
-</div>
-</div></section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p><img alt="" src="Figures/LazyEvaluation/Slide5.jpg" style="height:324px; width:900px" /></p>
-</div>
-</div>
-</div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Experimenting-with-Lazy-Evaluation">Experimenting with Lazy Evaluation<a class="anchor-link" href="#Experimenting-with-Lazy-Evaluation">&#182;</a></h2>
+<p><strong>Method 2:</strong> <code>map()</code> a function that returns a key/value pair.</p>
+
 </div>
 </div>
 </div><div class="fragment">
@@ -11966,34 +11990,9 @@ a.anchor-link {
 <div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">import</span> <span class="nn">findspark</span>
-<span class="n">findspark</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
-<span class="kn">from</span> <span class="nn">pyspark</span> <span class="kn">import</span> <span class="n">SparkContext</span>
-<span class="n">sc</span> <span class="o">=</span> <span class="n">SparkContext</span><span class="p">(</span><span class="n">master</span><span class="o">=</span><span class="s2">&quot;local[3]&quot;</span><span class="p">)</span>  <span class="c1">#note that we set the number of workers to 3</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div></div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Demonstration-of-lazy-evaluation">Demonstration of lazy evaluation<a class="anchor-link" href="#Demonstration-of-lazy-evaluation">&#182;</a></h3><p>We create an RDD with one million elements so that the effect of lazy evaluation and caching is significant.</p>
-
-</div>
-</div>
-</div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="o">%%</span><span class="k">time</span>
-RDD=sc.parallelize(range(1000000))
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">regular_rdd</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+<span class="n">pair_rdd</span> <span class="o">=</span> <span class="n">regular_rdd</span><span class="o">.</span><span class="n">map</span><span class="p">(</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">)</span> <span class="p">)</span>
+<span class="k">print</span> <span class="n">pair_rdd</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -12008,88 +12007,9 @@ RDD=sc.parallelize(range(1000000))
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>CPU times: user 68.3 ms, sys: 42.2 ms, total: 110 ms
-Wall time: 372 ms
+<pre>[(1, 1), (2, 4), (3, 9), (4, 16), (2, 4), (5, 25), (6, 36)]
 </pre>
 </div>
-</div>
-
-</div>
-</div>
-
-</div></div><div class="fragment">
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>It takes about 01.-0.5 sec.  to create the RDD.</p>
-
-</div>
-</div>
-</div></div></section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Define-a-computation">Define a computation<a class="anchor-link" href="#Define-a-computation">&#182;</a></h3><p>The role of the function <code>taketime</code> is to consume CPU cycles.</p>
-
-</div>
-</div>
-</div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">cos</span>
-<span class="k">def</span> <span class="nf">taketime</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
-    <span class="p">[</span><span class="n">cos</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
-    <span class="k">return</span> <span class="n">cos</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div></div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="o">%%</span><span class="k">time</span>
-taketime(5)
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-<div class="prompt"></div>
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>CPU times: user 9 µs, sys: 4 µs, total: 13 µs
-Wall time: 15 µs
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-<div class="prompt output_prompt">Out[7]:</div>
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>0.2836621854632263</pre>
-</div>
-
 </div>
 
 </div>
@@ -12101,11 +12021,7 @@ Wall time: 15 µs
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="define-the-map-operation.">define the <code>map</code> operation.<a class="anchor-link" href="#define-the-map-operation.">&#182;</a></h3><ul>
-<li>Note that this cell takes very little time.</li>
-<li>Because lazy evaluation delays actual computation until needed.</li>
-</ul>
-
+<h3 id="Some-important-Key-Value-Transformations">Some important Key-Value Transformations<a class="anchor-link" href="#Some-important-Key-Value-Transformations">&#182;</a></h3><h4 id="1.-reduceByKey(func):-Apply-the-reduce-function-on-the-values-with-the-same-key.">1. reduceByKey(func): Apply the reduce function on the values with the same key.<a class="anchor-link" href="#1.-reduceByKey(func):-Apply-the-reduce-function-on-the-values-with-the-same-key.">&#182;</a></h4>
 </div>
 </div>
 </div><div class="fragment">
@@ -12114,8 +12030,9 @@ Wall time: 15 µs
 <div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="o">%%</span><span class="k">time</span>
-Interm=RDD.map(lambda x: taketime(x))
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">rdd</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">)])</span>
+<span class="k">print</span> <span class="s2">&quot;Original RDD :&quot;</span><span class="p">,</span> <span class="n">rdd</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="k">print</span> <span class="s2">&quot;After transformation : &quot;</span><span class="p">,</span> <span class="n">rdd</span><span class="o">.</span><span class="n">reduceByKey</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">:</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -12130,8 +12047,8 @@ Interm=RDD.map(lambda x: taketime(x))
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>CPU times: user 26 µs, sys: 14 µs, total: 40 µs
-Wall time: 44.1 µs
+<pre>Original RDD : [(1, 2), (2, 4), (2, 6)]
+After transformation :  [(1, 2), (2, 10)]
 </pre>
 </div>
 </div>
@@ -12145,42 +12062,29 @@ Wall time: 44.1 µs
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<ul>
-<li><strong>Why</strong> did the previous cell took less than 50 micro-seconds (Wall Time)?</li>
-<li>Bcause <strong>no computation was done</strong> </li>
-<li>The cell defined an execution plan, but did not execute it yet.</li>
-</ul>
+<p>Note that although it is similar to the reduce function, it is implemented as a transformation and not as an action because the dataset can have very large number of keys. So, it does not return values to the driver program. Instead, it returns a new RDD.</p>
 
 </div>
 </div>
-</div></div></section><section>
+</div></div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Execution-Plans">Execution Plans<a class="anchor-link" href="#Execution-Plans">&#182;</a></h3><p>At this point the variable <code>Interm</code> does not point to an actual data structure. Instead, it points to an execution plan expressed as a <strong>dependence graph</strong>. The dependence graph defines the dependence of the RDD on each other.</p>
+<h4 id="2.-sortByKey():">2. sortByKey():<a class="anchor-link" href="#2.-sortByKey():">&#182;</a></h4><p>Sort RDD by keys in ascending order.</p>
 
 </div>
 </div>
 </div><div class="fragment">
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>The dependence graph associated with an RDD can be printed out using the method <code>toDebugString()</code>.
-The first line corresponds to <code>Interm</code> and the second line corresponds to <code>RDD</code> which is the input to <code>Interm</code></p>
-
-</div>
-</div>
-</div></div><div class="fragment">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="k">print</span> <span class="n">Interm</span><span class="o">.</span><span class="n">toDebugString</span><span class="p">()</span>
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">rdd</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">([(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">)])</span>
+<span class="k">print</span> <span class="s2">&quot;Original RDD :&quot;</span><span class="p">,</span> <span class="n">rdd</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="k">print</span> <span class="s2">&quot;After transformation : &quot;</span><span class="p">,</span> <span class="n">rdd</span><span class="o">.</span><span class="n">sortByKey</span><span class="p">()</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -12195,8 +12099,8 @@ The first line corresponds to <code>Interm</code> and the second line correspond
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>(3) PythonRDD[1] at RDD at PythonRDD.scala:48 []
- |  ParallelCollectionRDD[0] at parallelize at PythonRDD.scala:475 []
+<pre>Original RDD : [(2, 2), (1, 4), (3, 6)]
+After transformation :  [(1, 4), (2, 2), (3, 6)]
 </pre>
 </div>
 </div>
@@ -12204,23 +12108,23 @@ The first line corresponds to <code>Interm</code> and the second line correspond
 </div>
 </div>
 
-</div></div></section><section>
+</div></div><div class="fragment">
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>At this point only the two left blocks of the plan have been declared.</p>
-<p><img alt="" src="Figures/ExecutionPlan/Slide1.jpg" style="height:120px; width:900px" /></p>
+<p><strong>Note:</strong> The output of sortByKey() is an RDD. This means that  RDDs do have a meaningful order, which extends between partitions.</p>
+
 </div>
 </div>
-</div></section></section><section><section>
+</div></div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Actual-execution">Actual execution<a class="anchor-link" href="#Actual-execution">&#182;</a></h3><p>The <code>reduce</code> command needs to output an actual output, <strong>spark</strong> therefor has to actually execute the <code>map</code> and the <code>reduce</code>. Some real computation needs to be done, which takes about 1 - 3 seconds (Wall time) depending on the machine used and on it's load.</p>
+<h4 id="3.-mapValues(func):">3. mapValues(func):<a class="anchor-link" href="#3.-mapValues(func):">&#182;</a></h4><p>Apply func to each value of RDD without changing the key.</p>
 
 </div>
 </div>
@@ -12230,8 +12134,9 @@ The first line corresponds to <code>Interm</code> and the second line correspond
 <div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="o">%%</span><span class="k">time</span>
-print &#39;out=&#39;,Interm.reduce(lambda x,y:x+y)
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">rdd</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">)])</span>
+<span class="k">print</span> <span class="s2">&quot;Original RDD :&quot;</span><span class="p">,</span> <span class="n">rdd</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="k">print</span> <span class="s2">&quot;After transformation : &quot;</span><span class="p">,</span> <span class="n">rdd</span><span class="o">.</span><span class="n">mapValues</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -12246,9 +12151,8 @@ print &#39;out=&#39;,Interm.reduce(lambda x,y:x+y)
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>out= -0.288705467968
-CPU times: user 6.65 ms, sys: 3.84 ms, total: 10.5 ms
-Wall time: 1.92 s
+<pre>Original RDD : [(1, 2), (2, 4), (2, 6)]
+After transformation :  [(1, 4), (2, 8), (2, 12)]
 </pre>
 </div>
 </div>
@@ -12256,14 +12160,22 @@ Wall time: 1.92 s
 </div>
 </div>
 
-</div></div></section><section>
+</div></div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Executing-a-different-calculation-based-on-the-same-plan.">Executing a different calculation based on the same plan.<a class="anchor-link" href="#Executing-a-different-calculation-based-on-the-same-plan.">&#182;</a></h3><p>The plan defined by <code>Interm</code> can be executed many times. Below we give an example.</p>
-<p><strong>Note:</strong> the run-time is similar to that of the previous command because the intermediate results that are due to <code>Interm</code> have not been saved in memory.</p>
+<h4 id="4.-groupByKey():">4. groupByKey():<a class="anchor-link" href="#4.-groupByKey():">&#182;</a></h4><p>Returns a new RDD of <code>(key,&lt;iterator&gt;)</code> pairs where the iterator iterates over the values associated with the key.</p>
+<p><a href="http://anandology.com/python-practice-book/iterators.html">Iterators</a> are python objects that generate a sequence of values. Writing a loop over <code>n</code> elements as</p>
+<div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="c1">##do something</span>
+</pre></div>
+<p>is inefficient because it first allocates a list of <code>n</code> elements and then iterates over it.
+Using the iterator <code>xrange(n)</code> achieves the same result without materializing the list. Instead, elements are generated on the fly.</p>
+<p>To materialize the list of values returned by an iterator we will use the list comprehension command:</p>
+<div class="highlight"><pre><span></span><span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">iterator</span><span class="o">&gt;</span><span class="p">]</span>
+</pre></div>
 
 </div>
 </div>
@@ -12273,8 +12185,9 @@ Wall time: 1.92 s
 <div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="o">%%</span><span class="k">time</span>
-print &#39;out=&#39;,Interm.filter(lambda x:x&gt;0).count()
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">rdd</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">)])</span>
+<span class="k">print</span> <span class="s2">&quot;Original RDD :&quot;</span><span class="p">,</span> <span class="n">rdd</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="k">print</span> <span class="s2">&quot;After transformation : &quot;</span><span class="p">,</span> <span class="n">rdd</span><span class="o">.</span><span class="n">groupByKey</span><span class="p">()</span><span class="o">.</span><span class="n">mapValues</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -12289,9 +12202,8 @@ print &#39;out=&#39;,Interm.filter(lambda x:x&gt;0).count()
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>out= 500000
-CPU times: user 7.37 ms, sys: 3.13 ms, total: 10.5 ms
-Wall time: 1.06 s
+<pre>Original RDD : [(1, 2), (2, 4), (2, 6)]
+After transformation :  [(1, [2]), (2, [4, 6])]
 </pre>
 </div>
 </div>
@@ -12299,117 +12211,14 @@ Wall time: 1.06 s
 </div>
 </div>
 
-</div></div></section><section>
+</div></div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The middle block: <code>Map(Taketime)</code> is executed twice. Once for each final step.</p>
-<p><img alt="" src="Figures/ExecutionPlan/Slide2.jpg" style="height:200px; width:900px" /></p>
-</div>
-</div>
-</div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Caching-intermediate-results">Caching intermediate results<a class="anchor-link" href="#Caching-intermediate-results">&#182;</a></h3><p>The computation above is wasteful because each time we recompute the <code>map</code> operation.</p>
-<p>We sometimes want to keep the intermediate results in memory so that we can reuse them without recalculating them. This will reduce the running time, at the cost of requiring more memory.</p>
-<p>The method <code>cache()</code> indicates that the RDD generates in this plan should be stored in memory. Note that this is still only a <em>plan</em>. The actual calculation will be done only when the final result is seeked.</p>
-
-</div>
-</div>
-</div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="o">%%</span><span class="k">time</span>
-Interm=RDD.map(lambda x: taketime(x)).cache()
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-<div class="prompt"></div>
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>CPU times: user 3.11 ms, sys: 1.35 ms, total: 4.45 ms
-Wall time: 12.4 ms
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></div></section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>By adding the Cache after <code>Map(Taketime)</code>, we save the results of the map for the second computation.</p>
-<p><img alt="" src="Figures/ExecutionPlan/Slide3.jpg" style="height:200px; width:900px" /></p>
-</div>
-</div>
-</div></section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Plan-to-cache">Plan to cache<a class="anchor-link" href="#Plan-to-cache">&#182;</a></h3><p>The definition of <code>Interm</code> is almost the same as before. However, the <em>plan</em> corresponding to <code>Interm</code> is more elaborate and contains information about how the intermediate results <span class="girk">will be</span> cached and replicated.</p>
-<p>Note that <code>PythonRDD[4]</code> is now <span class="mark">[Memory Serialized 1x Replicated]</span></p>
-
-</div>
-</div>
-</div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="k">print</span> <span class="n">Interm</span><span class="o">.</span><span class="n">toDebugString</span><span class="p">()</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-<div class="prompt"></div>
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>(3) PythonRDD[4] at RDD at PythonRDD.scala:48 [Memory Serialized 1x Replicated]
- |  ParallelCollectionRDD[0] at parallelize at PythonRDD.scala:475 [Memory Serialized 1x Replicated]
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></div></section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Creating-the-cache">Creating the cache<a class="anchor-link" href="#Creating-the-cache">&#182;</a></h3><p>The following command executes the first map-reduce command <strong>and</strong> caches the result of the <code>map</code> command in memory.</p>
+<h4 id="5.-flatMapValues(func):">5. flatMapValues(func):<a class="anchor-link" href="#5.-flatMapValues(func):">&#182;</a></h4><p><code>func</code> is a function that takes as input a single value and returns an itrator that generates a sequence of values.
+The application of flatMapValues operates on a key/value RDD. It applies <code>func</code> to each value, and gets an list (generated by the iterator) of values. It then combines each of the values with the original key to produce a list of key-value pairs. These lists are concatenated as in <code>flatMap</code></p>
 
 </div>
 </div>
@@ -12419,8 +12228,10 @@ Wall time: 12.4 ms
 <div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="o">%%</span><span class="k">time</span>
-print &#39;out=&#39;,Interm.reduce(lambda x,y:x+y)
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">rdd</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">)])</span>
+<span class="k">print</span> <span class="s2">&quot;Original RDD :&quot;</span><span class="p">,</span> <span class="n">rdd</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="c1"># the lambda function generates for each number i, an iterator that produces i,i+1</span>
+<span class="k">print</span> <span class="s2">&quot;After transformation : &quot;</span><span class="p">,</span> <span class="n">rdd</span><span class="o">.</span><span class="n">flatMapValues</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="o">+</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -12435,51 +12246,8 @@ print &#39;out=&#39;,Interm.reduce(lambda x,y:x+y)
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>out= -0.288705467968
-CPU times: user 5.42 ms, sys: 2.85 ms, total: 8.27 ms
-Wall time: 1.08 s
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></div></section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Using-the-cache">Using the cache<a class="anchor-link" href="#Using-the-cache">&#182;</a></h3><p>This time <code>Interm</code> is cached. Therefor the second use of <code>Interm</code> is much faster than when we did not use <code>cache</code>: 0.25 second instead of 1.9 second. (your milage may vary depending on the computer you are running this on).</p>
-
-</div>
-</div>
-</div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="o">%%</span><span class="k">time</span>
-print &#39;out=&#39;,Interm.filter(lambda x:x&gt;0).count()
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-<div class="prompt"></div>
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>out= 500000
-CPU times: user 6.39 ms, sys: 2.95 ms, total: 9.35 ms
-Wall time: 223 ms
+<pre>Original RDD : [(1, 2), (2, 4), (2, 6)]
+After transformation :  [(1, 2), (1, 3), (2, 4), (2, 5), (2, 6), (2, 7)]
 </pre>
 </div>
 </div>
@@ -12493,8 +12261,7 @@ Wall time: 223 ms
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Partitioning-and-Gloming">Partitioning and Gloming<a class="anchor-link" href="#Partitioning-and-Gloming">&#182;</a></h2><p>When an RDD is created, you can specify how many partitions it should have. The default is the number of workers defined when you set up <code>SparkContext</code></p>
-
+<h3 id="Transformations-on-two-Pair-RDDs">Transformations on two Pair RDDs<a class="anchor-link" href="#Transformations-on-two-Pair-RDDs">&#182;</a></h3>
 </div>
 </div>
 </div><div class="fragment">
@@ -12503,8 +12270,11 @@ Wall time: 223 ms
 <div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="n">A</span><span class="o">=</span><span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1000000</span><span class="p">))</span>
-<span class="k">print</span> <span class="n">A</span><span class="o">.</span><span class="n">getNumPartitions</span><span class="p">()</span>
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">rdd1</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)])</span>
+<span class="n">rdd2</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">([(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">rdd1</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">rdd2</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span>
 </pre></div>
 
 </div>
@@ -12519,7 +12289,7 @@ Wall time: 223 ms
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>3
+<pre>[(1, 2), (2, 1), (2, 2)] [(2, 5), (3, 1)]
 </pre>
 </div>
 </div>
@@ -12533,9 +12303,7 @@ Wall time: 223 ms
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We can repartition <code>A</code> into a different number of partitions.</p>
-<p>The method <code>.partitionBy(k)</code> expects to get a <code>(key,value)</code> RDD where the keys are integers.<br>
-it will put in partition <code>i</code> all of the element for which <code>key%k == i</code></p>
+<h4 id="1.-subtractByKey:">1. subtractByKey:<a class="anchor-link" href="#1.-subtractByKey:">&#182;</a></h4><p>Remove from RDD1 all elements whose key is present in RDD2.</p>
 
 </div>
 </div>
@@ -12545,9 +12313,9 @@ it will put in partition <code>i</code> all of the element for which <code>key%k
 <div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="n">B</span><span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">))</span> \
-    <span class="o">.</span><span class="n">partitionBy</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="k">print</span> <span class="n">B</span><span class="o">.</span><span class="n">getNumPartitions</span><span class="p">()</span>
+<div class=" highlight hl-ipython2"><pre><span></span><span class="k">print</span> <span class="s2">&quot;RDD1:&quot;</span><span class="p">,</span> <span class="n">a</span>
+<span class="k">print</span> <span class="s2">&quot;RDD2:&quot;</span><span class="p">,</span> <span class="n">b</span>
+<span class="k">print</span> <span class="s2">&quot;Result:&quot;</span><span class="p">,</span> <span class="n">rdd1</span><span class="o">.</span><span class="n">subtractByKey</span><span class="p">(</span><span class="n">rdd2</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -12562,7 +12330,9 @@ it will put in partition <code>i</code> all of the element for which <code>key%k
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>10
+<pre>RDD1: [(1, 2), (2, 1), (2, 2)]
+RDD2: [(2, 5), (3, 1)]
+Result: [(1, 2)]
 </pre>
 </div>
 </div>
@@ -12570,73 +12340,63 @@ it will put in partition <code>i</code> all of the element for which <code>key%k
 </div>
 </div>
 
-</div></div></section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p><strong>glom()</strong> transforms each partition into a tuple (immutabe list) of elements.</p>
-<p>As they are tuples, the workers can refer to elements of the partition by index. (but you cannot assign values to the elements, the RDD is still immutable)</p>
-
-</div>
-</div>
-</div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="k">def</span> <span class="nf">getPartitionInfo</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-    <span class="n">d</span><span class="o">=</span><span class="mi">0</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span> 
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-            <span class="n">d</span><span class="o">+=</span><span class="nb">abs</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">G</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="c1"># access the glomed RDD that is now a  list</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">),</span><span class="n">d</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
-
-<span class="n">output</span><span class="o">=</span><span class="n">B</span><span class="o">.</span><span class="n">glom</span><span class="p">()</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">B</span><span class="p">:</span> <span class="n">getPartitionInfo</span><span class="p">(</span><span class="n">B</span><span class="p">))</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
-<span class="k">print</span> <span class="n">output</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-<div class="prompt"></div>
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[(0, 200000, 999995), None, (2, 200000, 999995), None, (4, 200000, 999995), None, (6, 200000, 999995), None, (8, 200000, 999995), None]
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></div><div class="fragment">
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Note that the odd numbered partitions are empty. Why is that?</p>
-
-</div>
-</div>
 </div></div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Repartitioning-for-Load-Balancing">Repartitioning for Load Balancing<a class="anchor-link" href="#Repartitioning-for-Load-Balancing">&#182;</a></h2>
+<h4 id="2.-join:">2. join:<a class="anchor-link" href="#2.-join:">&#182;</a></h4><ul>
+<li>A fundamental operation in relational databases.</li>
+<li>assumes two tables have a <strong>key</strong> column in common. </li>
+<li>merges rows with the same key.</li>
+</ul>
+<p>Suppose we have two <code>(key,value)</code> datasets</p>
+<table>
+<thead><tr>
+<th><strong>dataset 1</strong></th>
+<th></th>
+<th>..........</th>
+<th><strong>dataset 2</strong></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>key=name</strong></td>
+<td><strong>(gender,occupation,age)</strong></td>
+<td></td>
+<td><strong>key=name</strong></td>
+<td><strong>hair color</strong></td>
+</tr>
+<tr>
+<td>John</td>
+<td>(male,cook,21)</td>
+<td></td>
+<td>Jill</td>
+<td>blond</td>
+</tr>
+<tr>
+<td>Jill</td>
+<td>(female,programmer,19)</td>
+<td></td>
+<td>Grace</td>
+<td>brown</td>
+</tr>
+<tr>
+<td>John</td>
+<td>(male, kid, 2)</td>
+<td></td>
+<td>John</td>
+<td>black</td>
+</tr>
+<tr>
+<td>Kate</td>
+<td>(female, wrestler, 54)</td>
+</tr>
+</tbody>
+</table>
+
 </div>
 </div>
 </div></section><section>
@@ -12645,19 +12405,40 @@ it will put in partition <code>i</code> all of the element for which <code>key%k
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Suppose we start with 10 partitions, all with exactly the same number of elements</p>
+<p>When <code>Join</code> is called on datasets of type <code>(Key, V)</code> and <code>(Key, W)</code>, it  returns a dataset of <code>(Key, (V, W))</code> pairs with all pairs of elements for each key. Joining the 2 datasets above yields:</p>
+<table>
+<thead><tr>
+<th>key = name</th>
+<th>(gender,occupation,age),haircolor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>John</td>
+<td>((male,cook,21),black)</td>
+</tr>
+<tr>
+<td>John</td>
+<td>((male, kid, 2),black)</td>
+</tr>
+<tr>
+<td>Jill</td>
+<td>((female,programmer,19),blond)</td>
+</tr>
+</tbody>
+</table>
 
 </div>
 </div>
-</div><div class="fragment">
+</div></section><section>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="n">A</span><span class="o">=</span><span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1000000</span><span class="p">))</span>\
-    <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:(</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">))</span><span class="o">.</span><span class="n">partitionBy</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="k">print</span> <span class="n">A</span><span class="o">.</span><span class="n">glom</span><span class="p">()</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="nb">len</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<div class=" highlight hl-ipython2"><pre><span></span><span class="k">print</span> <span class="s2">&quot;RDD1:&quot;</span><span class="p">,</span> <span class="n">a</span>
+<span class="k">print</span> <span class="s2">&quot;RDD2:&quot;</span><span class="p">,</span> <span class="n">b</span>
+<span class="k">print</span> <span class="s2">&quot;Result:&quot;</span><span class="p">,</span> <span class="n">rdd1</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rdd2</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -12672,7 +12453,9 @@ it will put in partition <code>i</code> all of the element for which <code>key%k
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]
+<pre>RDD1: [(1, 2), (2, 1), (2, 2)]
+RDD2: [(2, 5), (3, 1)]
+Result: [(2, (1, 5)), (2, (2, 5))]
 </pre>
 </div>
 </div>
@@ -12680,68 +12463,13 @@ it will put in partition <code>i</code> all of the element for which <code>key%k
 </div>
 </div>
 
-</div></div></section><section>
+</div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>As we process the RDD, we find that most of the useful elements are in a single partition.
-We simulate this using a <code>filter()</code> command that filters out all of the elements from all but one of the partitions.</p>
-
-</div>
-</div>
-</div><div class="fragment">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1">#select 10% of the entries</span>
-<span class="n">B</span><span class="o">=</span><span class="n">A</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">):</span> <span class="n">k</span><span class="o">%</span><span class="k">10</span>==0)
-<span class="c1"># get no. of partitions</span>
-<span class="k">print</span> <span class="n">B</span><span class="o">.</span><span class="n">glom</span><span class="p">()</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="nb">len</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-<div class="prompt"></div>
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[100000, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div></div><div class="fragment">
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Left unchecked, the result is that all of the computation is done by a single worker.</p>
-
-</div>
-</div>
-</div></div></section><section>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>To fix the situation we need to repartition the RDD.<br>
-One way to do that is to repartition using a new key.</p>
-
+<h3 id="Actions-on-Pair-RDDs">Actions on Pair RDDs<a class="anchor-link" href="#Actions-on-Pair-RDDs">&#182;</a></h3>
 </div>
 </div>
 </div><div class="fragment">
@@ -12750,8 +12478,32 @@ One way to do that is to repartition using a new key.</p>
 <div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="n">C</span><span class="o">=</span><span class="n">B</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">x</span><span class="p">):(</span><span class="n">x</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span><span class="n">x</span><span class="p">))</span><span class="o">.</span><span class="n">partitionBy</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> 
-<span class="k">print</span> <span class="n">C</span><span class="o">.</span><span class="n">glom</span><span class="p">()</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="nb">len</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<div class=" highlight hl-ipython2"><pre><span></span><span class="n">rdd</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">parallelize</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">)])</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">rdd</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div></div></section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="1.-countByKey():-Count-the-number-of-elements-for-each-key.-Returns-a-dictionary-for-easy-access-to-keys.">1. countByKey(): Count the number of elements for each key. Returns a dictionary for easy access to keys.<a class="anchor-link" href="#1.-countByKey():-Count-the-number-of-elements-for-each-key.-Returns-a-dictionary-for-easy-access-to-keys.">&#182;</a></h4>
+</div>
+</div>
+</div><div class="fragment">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="k">print</span> <span class="s2">&quot;RDD: &quot;</span><span class="p">,</span> <span class="n">a</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">rdd</span><span class="o">.</span><span class="n">countByKey</span><span class="p">()</span>
+<span class="k">print</span> <span class="s2">&quot;Result:&quot;</span><span class="p">,</span> <span class="n">result</span>
 </pre></div>
 
 </div>
@@ -12766,7 +12518,8 @@ One way to do that is to repartition using a new key.</p>
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]
+<pre>RDD:  [(1, 2), (2, 4), (2, 6)]
+Result: defaultdict(&lt;type &#39;int&#39;&gt;, {1: 1, 2: 2})
 </pre>
 </div>
 </div>
@@ -12780,22 +12533,19 @@ One way to do that is to repartition using a new key.</p>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Another approach is to use random partitioning.</p>
-<ul>
-<li>An <strong>advantage</strong> of random partitioning is that it does not require defining a key.</li>
-<li>A <strong>disadvantage</strong> of random partitioning is that the size of the partitions is only approximately equal.</li>
-</ul>
+<h4 id="2.-collectAsMap():">2. collectAsMap():<a class="anchor-link" href="#2.-collectAsMap():">&#182;</a></h4><p>Collect the result as a dictionary to provide easy lookup.</p>
 
 </div>
 </div>
 </div><div class="fragment">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="n">D</span><span class="o">=</span><span class="n">B</span><span class="o">.</span><span class="n">repartition</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="k">print</span> <span class="n">D</span><span class="o">.</span><span class="n">glom</span><span class="p">()</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="nb">len</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<div class=" highlight hl-ipython2"><pre><span></span><span class="k">print</span> <span class="s2">&quot;RDD: &quot;</span><span class="p">,</span> <span class="n">a</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">rdd</span><span class="o">.</span><span class="n">collectAsMap</span><span class="p">()</span>
+<span class="k">print</span> <span class="s2">&quot;Result:&quot;</span><span class="p">,</span> <span class="n">result</span>
 </pre></div>
 
 </div>
@@ -12810,7 +12560,50 @@ One way to do that is to repartition using a new key.</p>
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]
+<pre>RDD:  [(1, 2), (2, 4), (2, 6)]
+Result: {1: 2, 2: 6}
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div></div></section><section>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="3.-lookup(key):">3. lookup(key):<a class="anchor-link" href="#3.-lookup(key):">&#182;</a></h4><p>Return all values associated with the provided key.</p>
+
+</div>
+</div>
+</div><div class="fragment">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="k">print</span> <span class="s2">&quot;RDD: &quot;</span><span class="p">,</span> <span class="n">a</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">rdd</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;Result:&quot;</span><span class="p">,</span> <span class="n">result</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+<div class="prompt"></div>
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>RDD:  [(1, 2), (2, 4), (2, 6)]
+Result: [4, 6]
 </pre>
 </div>
 </div>
